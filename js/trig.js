@@ -32,58 +32,37 @@ function calcAdjacentWithOpposite(y, b) {
     return  calcOppositeWithAdjacent(z, b);
 }
 
+function getSides() {
+    $('#a').val() > 0 ? a = parseFloat( $('#a').val() ) : a = null;
+    $('#b').val() > 0 ? b = parseFloat( $('#b').val() ): b = null;
+    $('#c').val() > 0 ? c = parseFloat( $('#c').val() ): c = null;
+}
+
+function getAngles() {
+    $('#y').val() > 0 ? y = parseFloat( $('#y').val() ) : y = null;
+    $('#z').val() > 0 ? z = parseFloat( $('#z').val() ) : z = null;
+}
+
+function getDiameters() {
+    $('#d').val() > 0 ? d = parseFloat( $('#d').val() ) : d = null;
+    $('#e').val() > 0 ? e = parseFloat( $('#e').val() ): e = null;
+}
+
+function getAll() {
+    getSides();
+    getAngles();
+    getDiameters();
+}
+
+function roundToTen(n) {
+    return +(Math.round(n + 'e+10') + 'e-10');
+}
+
 $(document).ready(function () {
+    // Re-evaluate everything on blur, click, or change.
     $('input').on('blur click change', function() {
         
-        // Variables for side lengths
-        if ($('#a').val() > 0) {
-            a = $('#a').val();
-        } else {
-            a = null;
-        }
-
-
-        if ($('#b').val() > 0) {
-            b = $('#b').val();
-        } else {
-            b = null;
-        }
-
-        if ($('#c').val() > 0) {
-            c = $('#c').val();
-        } else {
-            c = null;
-        }
-        
-        // Variables for angle degrees
-        if ($('#y').val() > 0) {
-            y = parseInt( 
-                    $('#y').val() 
-                );
-        } else {
-            y = null;
-        }
-
-        if ($('#z').val() > 0) {
-            z = parseInt(
-                    $('#z').val()
-                );
-        } else {
-            z = null;
-        }
-
-        // Variables for tip & shank (d & e)
-        if ($('#d').val() > 0) {
-           var d = $('#d').val();
-        } else {
-            var d = null;
-        }
-
-        if ($('#e').val() > 0) {
-           var e = $('#e').val();
-        } else {
-            var e = null;
-        }
+        getAll();
 
         // Things to do with A/B/C validations
         // This needs a switch or it gets too complicated with if/else, etc
@@ -123,6 +102,7 @@ $(document).ready(function () {
                 break;
 
             case (y > 0 && z > 0 && y + z !== 90):
+                console.log(y + z);
                 $('#trig-icon').empty().append('error');
                 $('#trig-message').empty().append('Sum of angles must equal 180&deg;.');
                 $('.trig-meta').removeClass('bg-grey bg-green').addClass('bg-red');
@@ -158,42 +138,10 @@ $(document).ready(function () {
         // Stop the button from actually submitting anything
         event.preventDefault();
     
-                // Re-evaluate the vars that may have been changed
+        // Re-evaluate the vars that may have been changed
         // Variables for side lengths
-        if ($('#a').val() > 0) {
-            a = $('#a').val();
-        } else {
-            a = null;
-        }
-
-        if ($('#b').val() > 0) {
-            b = $('#b').val();
-        } else {
-            b = null;
-        }
-
-        if ($('#c').val() > 0) {
-            c = $('#c').val();
-        } else {
-            c = null;
-        }
-
-        // Variables for angle degrees
-        if ($('#y').val() > 0) {
-            y = parseInt( 
-                    $('#y').val() 
-                );
-        } else {
-            y = null;
-        }
-
-        if ($('#z').val() > 0) {
-            z = parseInt(
-                    $('#z').val()
-                );
-        } else {
-            z = null;
-        }
+        getSides();
+        getAngles();
 
         // If two sides are set, we can find all the values automatically
         switch(true) {
@@ -215,11 +163,11 @@ $(document).ready(function () {
             case (a > 0 && b > 0 && c > 0):
                 // Update y
                 $('#y').prop('value', function() {
-                    return Math.asin((a / c)) * (180/Math.PI);
+                    return roundToTen( Math.asin((a / c)) * (180/Math.PI) );
                 });
                 // Update z
                 $('#z').prop('value', function() {
-                    return Math.asin(b / c) * (180/Math.PI);
+                    return roundToTen( Math.asin(b / c) * (180/Math.PI) );
                 });
                 break;
         }
@@ -240,16 +188,11 @@ $(document).ready(function () {
                 // Update b with the calculated value
                 $('#b').prop('value', calcOppositeWithAdjacent(y, a));
 
-                // Grab the update 'b' value
-                if ($('#b').val() > 0) {
-                    b = $('#b').val();
-                } else {
-                    b = null;
-                }
+                // Grab the update 'b' value and update the var
+                getSides();
 
-                // Update c with the value since we can now Pythagorum it
+                // Update c with the value since we can now Pythagorum it up
                 $('#c').prop('value', calcSideC(a, b));
-
                 break;
 
             // If we know y & b
@@ -266,15 +209,10 @@ $(document).ready(function () {
                 $('#a').prop('value', calcAdjacentWithOpposite(y, b));
 
                 // Grab the update 'a' value
-                if ($('#a').val() > 0) {
-                   a = $('#a').val();
-                } else {
-                    a = null;
-                }
+                getSides();
 
                 // Update c with the value since we can now Pythagorum it
                 $('#c').prop('value', calcSideC(a, b));
-
                 break;
 
         // If we know z & a
@@ -291,15 +229,10 @@ $(document).ready(function () {
                 $('#b').prop('value', calcAdjacentWithOpposite(z, a));
 
                 // Grab the update 'b' value
-                if ($('#b').val() > 0) {
-                   b = $('#b').val();
-                } else {
-                    b = null;
-                }
+                getSides();
 
                 // Update c with the value since we can now Pythagorum it
                 $('#c').prop('value', calcSideC(a, b));
-
                 break;
 
              // If we know z & b
@@ -316,39 +249,22 @@ $(document).ready(function () {
                 $('#a').prop('value', calcOppositeWithAdjacent(z, b));
 
                 // Grab the update 'a' value
-                if ($('#b').val() > 0) {
-                   b = $('#b').val();
-                } else {
-                    b = null;
-                }
+                getSides();
 
                 // Update c with the value since we can now Pythagorum it
                 $('#c').prop('value', calcSideC(a, b));
-
                 break;
         }
 
+        // For calculating tip "d" and shank "e", we need "b". It should
+        // be obvious why when looking at the diagram provided on the
+        // calc page.
+        //
         // Evaluate B & D & E
-        if ($('#b').val() > 0) {
-           b = $('#b').val();
-        } else {
-            b = null;
-        }
+        getSides();
+        getDiameters();
 
-        if ($('#d').val() > 0) {
-           var d = $('#d').val();
-        } else {
-            var d = null;
-        }
-
-        if ($('#e').val() > 0) {
-           var e = $('#e').val();
-        } else {
-            var e = null;
-        }
-
-
-        // If the user has inputted a tip diameter "d" or shank diameter "e", 
+        // If the user has set a tip diameter "d" or shank diameter "e", 
         // make sure "b" is set, and then calculate it out.
         switch(true) {
             case (d > 0 && e == null):
@@ -366,7 +282,8 @@ $(document).ready(function () {
     $('#trig-clear-form').click(function (event) {
         // Stop the button from actually submitting anything
         event.preventDefault();
-    
+
+        // Reload the page    
         location.reload();
     });
 });
